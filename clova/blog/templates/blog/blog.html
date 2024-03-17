@@ -1,0 +1,445 @@
+<!-- chat_app/templates/chat_app/chat.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>시각장애인 전용 웹서비스 개발 회의</title>
+    <link rel="stylesheet" href="{% static 'blog.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        #header {
+            display: flex;
+            justify-content: center; /* 가로로 중앙 정렬 추가 */
+            align-items: center;
+            flex-direction: column; /* 내부 아이템들을 세로로 정렬하기 위해 추가 */
+            padding: 10px;
+            margin-left: 20%;
+            margin-top: 5%;
+        }
+
+        #profile-container {
+            display: flex;
+            justify-content: center; /* 가운데 정렬 추가 */
+            align-items: center;
+            gap: 20px; /* 각 프로필 사진 사이의 간격 */
+        }
+
+        .profile-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-right: 20px;
+        }
+
+        .profile-picture {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
+        #chat-container {
+
+            flex-direction: column;
+            max-height: 500px; /* 적절한 높이 설정 */
+            overflow-y: auto;
+            margin: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        
+        /* 모든 메시지 컨테이너 기본 스타일 */
+        .message-container {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+        
+        /* 발신자 이름과 메시지 내용 */
+        .message-container p {
+            margin: 0;
+            padding: 5px;
+            border-radius: 5px;
+            max-width: 80%;
+        }
+        
+        /* 시간 스탬프 스타일 */
+        .timestamp {
+            align-self: flex-end;
+            font-size: 0.8em;
+            color: #666;
+        }
+        
+        /* 기본 메시지 스타일 */
+        .message-container .message-content {
+            align-self: flex-start;
+            background-color: #f0f0f0;
+        }
+        
+        /* '부원국'이 보낸 메시지 스타일 */
+        .message-container.sender-부원국 .message-content {
+            align-self: flex-end;
+            background-color: #d1ecf1;
+        }
+        
+        /* '부원국'이 보낸 메시지 타임스탬프 스타일 */
+        .message-container.sender-부원국 .timestamp {
+            align-self: flex-end;
+        }
+
+        #input-container {
+            margin-top: 10px;
+        }
+
+        #message-input {
+            width: 80%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #send-button {
+            width: 18%;
+            padding: 8px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #send-button:hover {
+            background-color: #45a049;
+        }
+
+        
+
+        .sidebar {
+            height: 100vh;
+            width: 250px;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #fff;
+            overflow-x: hidden;
+            border-right: 1px solid #e0e0e0;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            padding-top: 20px;
+          }
+          
+          .new-project-btn {
+            margin: 10px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            width: calc(100% - 20px);
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+          }
+          
+          .new-project-btn:hover {
+            background-color: #45a049;
+          }
+          
+          .sidebar {
+            height: 100vh;
+            width: 250px;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #464646;
+            overflow-x: hidden;
+            border-right: 1px solid #e0e0e0;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            padding-top: 20px;
+          }
+          .sidebar a::after {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 1px;
+            background-color: white; /* 흰색 선 색상 */
+          }
+          
+          .new-project-btn {
+            height: 50px;
+            margin: 10px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            width: calc(100% - 20px);
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+          }
+          
+          .new-project-btn:hover {
+            background-color: #45a049;
+          }
+          
+          .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 16px;
+            color: #fff;
+            display: block;
+            transition: background-color 0.3s;
+          }
+          
+          .project{
+            margin-top: 50px;
+          }
+
+          .sidebar a:hover {
+            background-color: #f0f0f0;
+          }
+          
+          .submenu-header {
+            cursor: pointer;
+          }
+          
+          .submenu-content {
+            display: block;
+            padding-left: 0;
+          }
+          
+          .submenu-content a {
+            padding-left: 30px;
+          }
+          
+          .submenu:hover .submenu-content {
+            display: block;
+          }
+          
+          .content {
+            margin-left: 250px;
+            padding: 1px 16px;
+            height: 1000px;
+          }
+          
+          .profile-container {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .profile-picture {
+            height: 40px; /* 원하는 크기로 조정 */
+            width: 40px; /* 원하는 크기로 조정 */
+            border-radius: 50%; /* 원형으로 만들기 */
+            margin-right: 10px; /* 텍스트와의 간격 */
+            object-fit: cover; /* 이미지 비율 유지 */
+        }
+        
+        .username {
+            font-size: 16px; /* 원하는 크기로 조정 */
+            color: #333; /* 원하는 색상으로 조정 */
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <img src="{% static 'media/profile3.jpg' %}" alt="프로필3" class="profile-picture">
+        <span class="username">부원국</span>
+    </div>
+    <div class="sidebar">
+        <button class="new-project-btn">새 프로젝트 추가</button>
+        <div class="project">
+            <a href="#project1">프로젝트 1</a>
+            <a href="#project2">프로젝트 2</a>
+            <div class="submenu">
+                <a href="#project3" class="submenu-header">프로젝트 3</a>
+                <div class="submenu-content">
+                <a href="#meetings">회의실</a>
+                <a href="#calendar">캘린더</a>
+                <a href="#files">파일</a>
+                <a href="#tasks">업무</a>
+                <a href="{% url 'blog:page_view' %}" onclick="window.open(this.href, '_blank', 'width=800, height=600'); return false;">회의록</a>
+                </div>
+            </div>    
+        </div>
+      </div>
+    <div id="header">
+        <div id="profile-container">
+                <section>
+                    <div class="card">
+                        <img class="card-img" src="{% static 'media/first.jpg' %}" alt="..." />
+                        <div class="card-body">
+                            <div class="text-center">
+                                <h5 class="people-text">Name : 김태형</h5>
+                                <h5 class="people-text">E-mail : taehyoung@gmail.com</h5>
+                                <div class="checklist">
+                                    {% for name, tasks in result_list.items %}
+                                        {% if name == "태형: " %}  <!-- 이름이 "김태형"인 경우만 출력 -->
+        
+                                        {% for task in tasks %}
+                                            <label>
+                                                <input type="checkbox" id="{{ forloop.parentloop.counter }}_{{ forloop.counter }}" name="task_checkbox">
+                                                {{ task }}
+                                            </label>
+                                            
+                                        {% endfor %}
+        
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="card">
+                        <img class="card-img" src="{% static 'media/second.jpg' %}" alt="..." />
+                        <div class="card-body">
+                            <div class="text-center">
+                                <h5 class="people-text">Name : 정동민</h5>
+                                <h5 class="people-text">E-mail : dongmin@gmail.com</h5>
+                                <div class="checklist">
+                                    {% for name, tasks in result_list.items %}
+                                        {% if name == "동민" %}  
+                                        {% for task in tasks %}
+                                            <label>
+                                                <input type="checkbox" id="{{ forloop.parentloop.counter }}_{{ forloop.counter }}" name="task_checkbox">
+                                                {{ task }}
+                                            </label>
+                                            
+                                        {% endfor %}
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        
+        
+                    <div class="card">
+                        <img class="card-img" src="{% static 'media/four.jpg' %}" alt="..." />
+                        <div class="card-body">
+                            <div class="text-center">
+                                <h5 class="people-text">Name : 부원국</h5>
+                                <h5 class="people-text">E-mail : wonkuk@gmail.com</h5>
+                                <div class="checklist">
+                                    {% for name, tasks in result_list.items %}
+                                        {% if name == "원국" %}  
+                                        {% for task in tasks %}
+                                            <label>
+                                                <input type="checkbox" id="{{ forloop.parentloop.counter }}_{{ forloop.counter }}" name="task_checkbox">
+                                                {{ task }}
+                                            </label>
+                                            
+                                        {% endfor %}
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="card">
+                        <img class="card-img" src="{% static 'media/third.jpg' %}" alt="..." />
+                        <div class="card-body">
+                            <div class="text-center">
+                                <h5 class="people-text">Name : 권기호</h5>
+                                <h5 class="people-text">E-mail : kiho@gmail.com</h5>
+                                <div class="checklist">
+                                    {% for name, tasks in result_list.items %}
+                                        {% if name == "기호" %}  
+                                        {% for task in tasks %}
+                                            <label>
+                                                <input type="checkbox" id="{{ forloop.parentloop.counter }}_{{ forloop.counter }}" name="task_checkbox">
+                                                {{ task }}
+                                            </label>
+                                            
+                                        {% endfor %}
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+        
+                </section>
+        
+                
+        
+        
+                <!-- 팝업 버튼 -->
+                <button id="popupButton"><img src="{% static 'media/chat.png' %}" alt="버튼 이미지"></button>
+        
+                <!-- 팝업 창 -->
+                <div id="popup" class="popup">
+                    <div class="popup-content">
+                        <!-- <span class="close-button" id="closeButton">&times;</span> -->
+                        <div id="chat-container">
+                            <div id="chat-box"></div>
+                            <input type="text" id="user-input" placeholder="Type your message...">
+                            <button id="send-btn" onclick="sendMessage()">Send</button>
+                        </div>
+                    </div>
+                </div>
+        
+                <script>
+                    const popup = document.getElementById('popup');
+                    const popupButton = document.getElementById('popupButton');
+                    const closeButton = document.getElementById('closeButton');
+                
+                    // 팝업 버튼을 클릭할 때 팝업을 열고 닫는 함수
+                    popupButton.addEventListener('click', function () {
+                        if (popup.style.display === 'none' || popup.style.display === '') {
+                            popup.style.display = 'block'; // 팝업을 열기
+                        } else {
+                            popup.style.display = 'none'; // 팝업을 닫기
+                        }
+                    });
+                
+                    // 팝업 닫기 버튼을 클릭할 때 팝업을 닫는 함수
+                    closeButton.addEventListener('click', function () {
+                        popup.style.display = 'none'; // 팝업을 닫기
+                    });
+
+                    function sendMessage() {
+                        var userMessage = document.getElementById('user-input').value;
+                        if (userMessage.trim() === '') return;
+                
+                        var chatBox = document.getElementById('chat-box');
+                        chatBox.innerHTML += '<div class="message user-message">' + userMessage + '</div>';
+                
+                        // chat gpt 메세지 보내기
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('POST', 'chat/', true); 
+                        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState === 4 && xhr.status === 200) {
+                                var botResponse = JSON.parse(xhr.responseText).result;
+                                chatBox.innerHTML += '<div class="message bot-message">' + botResponse + '</div>';
+                                chatBox.scrollTop = chatBox.scrollHeight;
+                            }
+                        };
+                
+                        xhr.send('question=' + encodeURIComponent(userMessage));
+            
+                        document.getElementById('user-input').value = '';
+                    }
+                </script>
+            </div>
+        
+    
+</body>
+</html>
